@@ -81,6 +81,7 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             quads = @world.spatial.updateObject(this)
             @quadx = quads[0]
             @quady = quads[1]
+            @world.pingQuadrant(@quadx, @quady)
 
             # Flocking
 
@@ -167,10 +168,20 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
 
         # Increase the activity counter for a given quadrant. Max out at 255.
         pingQuadrant: (x, y) ->
-            q = @activity[x][y]
-            q[0] += 20
-            if q[0] > 255
-                q[0] = 255
+            @activity[x][y] += 20
+            if @activity[x][y] > 255
+                @activity[x][y] = 255
+
+        highlightQuadrants: (context) ->
+            # Highlight active quadrants based on activity.
+            for x in [0...@activity.length]
+                for y in [0...@activity[x].length]
+                    # Only draw squares that are non-black.
+                    if @activity[x][y]
+                        # Fill the quadrant with a shade of blue based on activity, which is
+                        # measured from 0 to 255.
+                        context.fillStyle = "rgb(0,0," + @activity[x][y] + ")"
+                        context.fillRect(x * @spatial.subSize, y * @spatial.subSize, @spatial.subSize, @spatial.subSize)
 
         update: ->
             # Every frame, reduce the activity counter of all quadrants.
@@ -187,19 +198,18 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             if @mousedown
                 @objects.push(new Actor(this))
 
-        draw: ->
-            # Highlight active quadrants based on activity.
-            for x in [0...@activity.length]
-                for y in [0...@activity[x].length]
-                    # Only draw squares that are non-black.
-                    if @activity[x][y]
-                        # Fill the quadrant with a shade of blue based on activity, which is
-                        # measured from 0 to 255.
-                        c.fillStyle = "rgb(0,0," + @activity[x][y] + ")"
-                        c.fillRect(x * @spatial.subSize, y * @spatial.subSize, @spatial.subSize, @spatial.subSize)
+        draw: (context, interp) ->
+            context.save()
+            context.fillStyle = @color
+            context.fillRect(0, 0, @width, @height)
+            context.restore()
 
-            # Call every Actor's draw method.
-            super
+            @highlightQuadrants(context)
+
+            obj.draw(context, interp) for obj in @objects
+
+            if @displayFPS
+                @drawFPS()
 
     module = {'FlockingWorld': FlockingWorld}
     return module
