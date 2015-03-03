@@ -38,7 +38,7 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             context.fill()
 
         # Move, calculate quad info, flock.
-        think: ->
+        update: ->
             # Movement
 
             # Find the the angle from our target
@@ -78,45 +78,42 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             # neighboring quadrants. Once quad info is calculated, ping the
             # quadrant to increase its' activity counter and move this actor to the
             # appropriate quadrant.
-            oldquadx = @quadx
-            oldquady = @quady
-            @quadx = parseInt(@x / @world.quadrantSize)
-            @quady = parseInt(@y / @world.quadrantSize)
-            @world.pingQuadrant(@quadx, @quady)
-            @world.updateQuadrantObjs(this, oldquadx, oldquady, @quadx, @quady)
+            quads = @world.spatial.updateObject(this)
+            @quadx = quads[0]
+            @quady = quads[1]
 
             # Flocking
 
             # Look for neighbors
-            neighbors = new Array()
-
-            maxx = @world.quadrants.length
-            maxy = @world.quadrants[0].length
+            #neighbors = new Array()
+            #maxx = @world.spatial.length
+            #maxy = @world.spatial[0].length
 
             # Look one quadrant in every direction from our current quadrant.
-            for x in [-1..1]
-                for y in [-1..1]
-                    # Set the quadrant coordinates to look in.
-                    lookx = @quadx + x
-                    looky = @quady + y
+            #for x in [-1..1]
+            #    for y in [-1..1]
+            #        # Set the quadrant coordinates to look in.
+            #        lookx = @quadx + x
+            #        looky = @quady + y
 
-                    # Wrap quadrant coordinates around borders.
-                    lookx = maxx + lookx if lookx < 0
-                    looky = maxy + looky if looky < 0
-                    lookx = lookx - maxx if lookx > maxx
-                    looky = looky - maxy if looky > maxy
+            #        # Wrap quadrant coordinates around borders.
+            #        lookx = maxx + lookx if lookx < 0
+            #        looky = maxy + looky if looky < 0
+            #        lookx = lookx - maxx if lookx > maxx
+            #        looky = looky - maxy if looky > maxy
 
-                    # Find the first neighbor that is at this quadrant coordinate. Finding
-                    # just the first neighbor isn't as accurate, but limits the amount of
-                    # calculations needed when there are many Actors in play.
-                    quad_neighbor = @world.quadrants[lookx][looky][1].slice(0,1)
-                    neighbors = neighbors.concat(quad_neighbor)
+            #        # Find the first neighbor that is at this quadrant coordinate. Finding
+            #        # just the first neighbor isn't as accurate, but limits the amount of
+            #        # calculations needed when there are many Actors in play.
+            #        quad_neighbor = @world.quadrants[lookx][looky][1].slice(0,1)
+            #        neighbors = neighbors.concat(quad_neighbor)
 
-                    # Make sure this actor doesn't put itself into the list of neighbors.
-                    if x == 0 and y == 0
-                        index = neighbors.indexOf(this)
-                        if index >=0
-                            neighbors.splice(neighbors.indexOf(this),1)
+            #        # Make sure this actor doesn't put itself into the list of neighbors.
+            #        if x == 0 and y == 0
+            #            index = neighbors.indexOf(this)
+            #            if index >=0
+            #                neighbors.splice(neighbors.indexOf(this),1)
+            neighbors = @world.spatial.getNeighbors(this)
 
             # Follow neighbors
 
@@ -161,7 +158,7 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
 
         # Increase the activity counter for a given quadrant. Max out at 255.
         pingQuadrant: (x, y) ->
-            q = @quadrants[x][y]
+            q = @activity[x][y]
             q[0] += 20
             if q[0] > 255
                 q[0] = 255
