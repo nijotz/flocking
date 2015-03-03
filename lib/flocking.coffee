@@ -59,7 +59,10 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             @speed = 1 if @speed < 1
             @speed = 6 if @speed > 6
 
-            # Update position based on heading/speed
+            # Update position based on heading/speed and track old position for
+            # spatialsub stuff below
+            oldx = @x
+            oldy = @y
             @x += Math.cos(@heading) * @speed
             @y += Math.sin(@heading) * @speed
 
@@ -78,7 +81,7 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             # neighboring quadrants. Once quad info is calculated, ping the
             # quadrant to increase its' activity counter and move this actor to the
             # appropriate quadrant.
-            quads = @world.spatial.updateObject(this)
+            quads = @world.spatial.updateObject(this, oldx, oldy, @x, @y)
             @quadx = quads[0]
             @quady = quads[1]
             @world.pingQuadrant(@quadx, @quady)
