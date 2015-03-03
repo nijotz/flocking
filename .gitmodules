@@ -1,0 +1,3 @@
+[submodule "lib/canvas-tools"]
+	path = lib/canvas-tools
+	url = git@github.com:nijotz/canvas-tools.git
