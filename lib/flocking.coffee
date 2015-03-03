@@ -141,20 +141,29 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             @targetSpeed = Math.max(1, @targetSpeed % 6)
 
     class FlockingWorld extends World.World
-        constructor: (@canvas) ->
+        constructor: ->
             super
+
             @spatial = new SpatialSub(canvas)
+
             @activity = new Array(@spatial.numx)
             for x in [0...@spatial.numx]
                 @activity[x] = new Array(@spatial.numy)
                 for y in [0...@spatial.numy]
                     @activity[x][y] = 0
-            @displayFPS = true
-            @canvas.addEventListener('click', @mouseClick, false)
 
-        mouseClick: =>
-            console.log('Click')
-            @objects.push(new Actor(this))
+            @displayFPS = true
+
+            @mousedown = false
+            @canvas.addEventListener('mousedown', @onmousedown, false)
+            @canvas.addEventListener('mouseup', @onmouseup, false)
+
+        onmouseup: =>
+            console.log('mouseup')
+            @mousedown = false
+        onmousedown: =>
+            console.log('mousedown')
+            @mousedown = true
 
         # Increase the activity counter for a given quadrant. Max out at 255.
         pingQuadrant: (x, y) ->
