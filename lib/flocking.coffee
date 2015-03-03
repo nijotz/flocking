@@ -129,8 +129,8 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
             @displayFPS = true
 
             @mousedown = false
-            @canvas.addEventListener('mousedown', @onmousedown, false)
-            @canvas.addEventListener('mouseup', @onmouseup, false)
+            window.addEventListener('mousedown', @onmousedown)
+            window.addEventListener('mouseup', @onmouseup)
 
         onmouseup: =>
             console.log('mouseup')
