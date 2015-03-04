@@ -11,7 +11,8 @@
     //it will not be needed.
     stubModules: ['cs'],
 
-    optimize: "none",
+    //Disable for quicker dev builds
+    //optimize: "none",
 
     modules: [
         {
