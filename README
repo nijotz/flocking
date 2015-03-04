@@ -3,3 +3,5 @@ To build:
 # Install node.js
 # npm install -g requirejs
 # build.sh
+# python -m SimpleHTTPServer
+# goto http://localhost:8000
