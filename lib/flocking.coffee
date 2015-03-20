@@ -118,6 +118,14 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
         constructor: ->
             super
 
+            @createSpatialSub()
+            @displayFPS = true
+
+            @mousedown = false
+            window.addEventListener('mousedown', @onmousedown)
+            window.addEventListener('mouseup', @onmouseup)
+
+        createSpatialSub: ->
             @spatial = new SpatialSub(canvas)
 
             @activity = new Array(@spatial.numx)
@@ -126,11 +134,9 @@ define ['cs!canvas-tools/world', 'cs!canvas-tools/spatialsub'],
                 for y in [0...@spatial.numy]
                     @activity[x][y] = 0
 
-            @displayFPS = true
-
-            @mousedown = false
-            window.addEventListener('mousedown', @onmousedown)
-            window.addEventListener('mouseup', @onmouseup)
+        eventResize: =>
+            super
+            @createSpatialSub()
 
         onmouseup: =>
             console.log('mouseup')
